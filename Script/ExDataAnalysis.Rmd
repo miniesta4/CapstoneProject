@@ -1,0 +1,174 @@
+---
+title: "Capstone Project: Milestone Report"
+author: "miniesta4"
+date: "April 1, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# v202003251930
+knitr::opts_chunk$set(echo = FALSE, root.dir = "../")
+
+library(tm)
+library(wordcloud)
+library(ngram)
+
+source("./Utils.R")
+```
+
+## Introduction
+
+The task is to do some exploratory data analysis. The basic goal is to develop 
+an understanding of the various statistical properties of the data set so that
+you can build a good prediction model down the road.
+
+## Text files: reading and sampling
+
+Three text files are provided:
+
+```{r list}
+fics <- list.files("../Data/en_US", full.names = TRUE)
+fics
+```
+
+Character vectors obtained as result of reading are considered too large for
+analysis.
+
+```{r blogs, cache=TRUE}
+docs <- lapply(fics, readLines, encoding = "UTF-8", skipNul = TRUE)
+names(docs) <- c("blogs", "news", "twitter")
+
+magnitudes <- calcula_mag(docs)
+knitr::kable(magnitudes)
+
+```
+
+Sampling is applied to keep just 1% of lines.
+
+```{r samples, cache=TRUE}
+set.seed(20200401)
+samples <- lapply(magnitudes[2, ], function(x) sample(x, .01 * x))
+docs_sample <- mapply(`[`, docs, samples)
+
+rm("docs")
+
+magnitudes_s <- calcula_mag(docs_sample)
+knitr::kable(magnitudes_s)
+
+```
+
+Finally, non ASCII characters are removed.
+
+```{r ascii, cache=TRUE}
+
+docs_sample_ascii <- lapply(docs_sample, iconv, "UTF-8", "ASCII", "")
+magnitudes_s_a <- calcula_mag(docs_sample_ascii)
+knitr::kable(magnitudes_s_a)
+
+```
+
+## Corpus object
+
+The character vectors are loaded into a Corpus object. A Corpus is a collection 
+of documents, in this case the three documents obtained after sampling.
+
+```{r corpus}
+docs_corpus <- VCorpus(VectorSource(docs_sample_ascii))
+inspect(docs_corpus)
+
+```
+
+## Pre-processing
+
+Some transformations are provided by the tm package to mainly clean the data.
+
+```{r get}
+getTransformations()
+
+```
+
+All of them are applied. Also, translation to lower case. Stemming is the final
+step: every word is reduced to its root.
+
+```{r docs}
+docs_corpus <- tm_map(docs_corpus, content_transformer(tolower))
+docs_corpus <- tm_map(docs_corpus, removeNumbers)
+docs_corpus <- tm_map(docs_corpus, removePunctuation)
+docs_corpus <- tm_map(docs_corpus, stripWhitespace)
+docs_corpus <- tm_map(docs_corpus, removeWords, stopwords("english"))
+docs_corpus <- tm_map(docs_corpus, stemDocument)
+inspect(docs_corpus)
+
+```
+
+## Document term matrix
+
+A document term matrix (DTM) is created from the transformed corpus.
+
+```{r dtm}
+dtm <- DocumentTermMatrix(docs_corpus)
+dtm
+```
+
+Cumulative frequencies of words across documents produces these results.
+
+```{r freq}
+freq <- colSums(as.matrix(dtm))
+summary(freq)
+```
+
+Ten most frequent occurring terms.
+
+```{r ord}
+ord <- order(freq, decreasing = TRUE)
+freq[ord[1: 10]]
+```
+
+Terms occurring at least a thousand times.
+
+```{r find}
+findFreqTerms(dtm, lowfreq = 500)
+```
+
+Word cloud of terms which frequency is equeal or above 1000.
+
+```{r cloud}
+wordcloud(names(freq), freq, min.freq = 1000)
+```
+
+## N-Grams
+
+N-grams are the base for a prediction model of next word. The ngram package 
+allows for fast n-gram tokenization.
+
+Bigrams
+
+```{r cadena}
+cadena <- concatenate(lapply(docs_corpus ,"[", 1))
+
+n2_gram <- ngram(cadena, n = 2)
+n2_gram_freqs <- get.phrasetable(n2_gram)
+summary(n2_gram_freqs$freq)
+head(n2_gram_freqs[order(n2_gram_freqs$freq, decreasing = TRUE), -3])
+```
+
+Trigrams
+
+```{r n3}
+n3_gram <- ngram(cadena, n = 3)
+n3_gram_freqs <- get.phrasetable(n3_gram)
+summary(n3_gram_freqs$freq)
+head(n3_gram_freqs[order(n3_gram_freqs$freq, decreasing = TRUE), -3])
+```
+
+
+4-grams
+
+```{r n4}
+n4_gram <- ngram(cadena, n = 4)
+n4_gram_freqs <- get.phrasetable(n4_gram)
+summary(n4_gram_freqs$freq)
+head(n4_gram_freqs[order(n4_gram_freqs$freq, decreasing = TRUE), -3])
+```
+
+## Conclusions
