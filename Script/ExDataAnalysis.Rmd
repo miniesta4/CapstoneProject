@@ -2,11 +2,13 @@
 title: "Capstone Project: Milestone Report"
 author: "miniesta4"
 date: "April 1, 2020"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
 ---
 
 ```{r setup, include=FALSE}
-# v202003251930
+# v202003261007
 knitr::opts_chunk$set(echo = FALSE, root.dir = "../")
 
 library(tm)
@@ -43,11 +45,11 @@ knitr::kable(magnitudes)
 
 ```
 
-Sampling is applied to keep just 1% of lines.
+Sampling is applied to keep just 5% of lines.
 
 ```{r samples, cache=TRUE}
 set.seed(20200401)
-samples <- lapply(magnitudes[2, ], function(x) sample(x, .01 * x))
+samples <- lapply(magnitudes[2, ], function(x) sample(x, .05 * x))
 docs_sample <- mapply(`[`, docs, samples)
 
 rm("docs")
@@ -87,16 +89,16 @@ getTransformations()
 
 ```
 
-All of them are applied. Also, translation to lower case. Stemming is the final
-step: every word is reduced to its root.
+All of them but stemming (reducing every word to its root) are applied. Also, 
+translation to lower case.
 
 ```{r docs}
 docs_corpus <- tm_map(docs_corpus, content_transformer(tolower))
 docs_corpus <- tm_map(docs_corpus, removeNumbers)
+docs_corpus <- tm_map(docs_corpus, removeWords, stopwords("english"))
 docs_corpus <- tm_map(docs_corpus, removePunctuation)
 docs_corpus <- tm_map(docs_corpus, stripWhitespace)
-docs_corpus <- tm_map(docs_corpus, removeWords, stopwords("english"))
-docs_corpus <- tm_map(docs_corpus, stemDocument)
+#docs_corpus <- tm_map(docs_corpus, stemDocument)
 inspect(docs_corpus)
 
 ```
@@ -117,23 +119,21 @@ freq <- colSums(as.matrix(dtm))
 summary(freq)
 ```
 
-Ten most frequent occurring terms.
+Twenty most frequent occurring terms.
 
 ```{r ord}
 ord <- order(freq, decreasing = TRUE)
-freq[ord[1: 10]]
+freq[ord[1: 20]]
 ```
-
-Terms occurring at least a thousand times.
 
 ```{r find}
-findFreqTerms(dtm, lowfreq = 500)
+# findFreqTerms(dtm, lowfreq = 1000)
 ```
 
-Word cloud of terms which frequency is equeal or above 1000.
+Word cloud with 100 most frequent terms.
 
 ```{r cloud}
-wordcloud(names(freq), freq, min.freq = 1000)
+wordcloud(names(freq), freq, scale = c(3, .5), max.words = 100)
 ```
 
 ## N-Grams
@@ -144,12 +144,14 @@ allows for fast n-gram tokenization.
 Bigrams
 
 ```{r cadena}
-cadena <- concatenate(lapply(docs_corpus ,"[", 1))
+cadena <- concatenate(lapply(docs_corpus, "[", 1))
+cadena <- preprocess(cadena, case = "lower", remove.punct = TRUE, 
+                     remove.numbers = TRUE, fix.spacing = TRUE)
 
 n2_gram <- ngram(cadena, n = 2)
 n2_gram_freqs <- get.phrasetable(n2_gram)
 summary(n2_gram_freqs$freq)
-head(n2_gram_freqs[order(n2_gram_freqs$freq, decreasing = TRUE), -3])
+n2_gram_freqs[order(n2_gram_freqs$freq, decreasing = TRUE), ][1:10, ]
 ```
 
 Trigrams
@@ -158,7 +160,7 @@ Trigrams
 n3_gram <- ngram(cadena, n = 3)
 n3_gram_freqs <- get.phrasetable(n3_gram)
 summary(n3_gram_freqs$freq)
-head(n3_gram_freqs[order(n3_gram_freqs$freq, decreasing = TRUE), -3])
+n3_gram_freqs[order(n3_gram_freqs$freq, decreasing = TRUE), ][1:10, ]
 ```
 
 
@@ -168,7 +170,7 @@ head(n3_gram_freqs[order(n3_gram_freqs$freq, decreasing = TRUE), -3])
 n4_gram <- ngram(cadena, n = 4)
 n4_gram_freqs <- get.phrasetable(n4_gram)
 summary(n4_gram_freqs$freq)
-head(n4_gram_freqs[order(n4_gram_freqs$freq, decreasing = TRUE), -3])
+n4_gram_freqs[order(n4_gram_freqs$freq, decreasing = TRUE), ][1:10, ]
 ```
 
 ## Conclusions
