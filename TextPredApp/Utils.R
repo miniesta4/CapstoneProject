@@ -12,8 +12,10 @@ calcula_mag <- function(x){
 }
 
 limpia_texto <- function(t, prof_fic = "./Data/en_profanity.txt" ){
-  prof <- readLines(prof_fic, encoding = "UTF-8", skipNul = TRUE)
-  prof_ptn <- paste0(prof, collapse = "|")
+  if (!exists("prof")){
+    prof <- readLines(prof_fic, encoding = "UTF-8", skipNul = TRUE)
+    prof_ptn <- paste0(prof, collapse = "|")  
+  }
   t_limpio <- tolower(t)
   t_limpio <- gsub("[^a-z ]", " ", t_limpio)
   t_limpio <- gsub(" m\\b", " am", t_limpio)
@@ -67,7 +69,7 @@ predice_texto <- function(t){
     if (is.na(res_busq[1])){
       resultado[1] <- "Not found."
     } else {
-      resultado[1] <- "Found."
+      resultado[1] <- "Found:"
       resultado[2] <- res_busq
     }
   }
