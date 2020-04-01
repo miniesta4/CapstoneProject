@@ -1,5 +1,5 @@
 
-# v202003311652
+# v202003311855
 library(shiny)
 
 # Define UI for application that draws a histogram
@@ -9,14 +9,16 @@ shinyUI(fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      helpText("Prediction is made just on words.", 
+      helpText("The prediction is made on the last three words at most.", 
                "Profanity words are ignored."),
       textInput("entrada", h3("Enter text:"), value = "")
     ),
     
     mainPanel(
-      p("First line shows the text used for prediction.", 
-        "Second line is the prediction result."),
+      em("Coursera Capstone Project by M. Iniesta (2020-04-01)"), 
+      br(),
+      p("The first line shows the text entered for the prediction.", 
+        "The second line is the prediction result."),
       div(textOutput("entered"), style = "color:blue"),
       div(textOutput("predicted"), style = "color:blue")
     )
