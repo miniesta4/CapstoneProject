@@ -1,5 +1,5 @@
 
-# v202003301933
+# v202004151825
 library(ngram)
 source("./Script/Utils.R")
 
@@ -19,17 +19,20 @@ make_ngrams <- function(directorio = "./Data/en_US"){
   rm(docs_sample)
   texto_v1 <- limpia_texto(texto_v)
 
-  texto <- paste0(texto_v1, collapse = " ")
-  
-  n2_gram <- ngram(texto, n = 2)
+  # texto <- paste0(texto_v1, collapse = " ")
+  texto1 <- grep("\\s", texto_v1, value = TRUE)
+  texto2 <- grep("\\s\\w+\\s", texto_v1, value = TRUE)
+  texto3 <- grep("\\s\\w+\\s\\w+\\s", texto_v1, value = TRUE)
+
+  n2_gram <- ngram(texto1, n = 2)
   n2_gram_freqs <- get.phrasetable(n2_gram)
   n2_gram_freqs$pre_n <- 2 
   
-  n3_gram <- ngram(texto, n = 3)
+  n3_gram <- ngram(texto2, n = 3)
   n3_gram_freqs <- get.phrasetable(n3_gram)
   n3_gram_freqs$pre_n <- 3
   
-  n4_gram <- ngram(texto, n = 4)
+  n4_gram <- ngram(texto3, n = 4)
   n4_gram_freqs <- get.phrasetable(n4_gram)
   n4_gram_freqs$pre_n <- 4
   

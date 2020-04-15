@@ -1,14 +1,14 @@
 ---
 title: "Capstone Project: Milestone Report"
 author: "miniesta4"
-date: "April 1, 2020"
+date: "April 14, 2020"
 output: 
   html_document:
     toc: TRUE
 ---
 
 ```{r setup, include=FALSE}
-# v202003261007
+# v202004151813
 knitr::opts_chunk$set(echo = FALSE, root.dir = "../")
 
 library(tm)
@@ -89,8 +89,8 @@ getTransformations()
 
 ```
 
-All of them but stemming (reducing every word to its root) are applied. Also, 
-translation to lower case.
+All of them but stemming (reducing every word to its root) are applied. 
+Also, translation to lower case.
 
 ```{r docs}
 docs_corpus <- tm_map(docs_corpus, content_transformer(tolower))
@@ -105,18 +105,22 @@ inspect(docs_corpus)
 
 ## Document term matrix
 
-A document term matrix (DTM) is created from the transformed corpus.
+A document term matrix (DTM) is created from the transformed corpus. The DTM is
+a matrix that lists all occurrences of words in the corpus. Summary information
+on the matrix follows.
 
 ```{r dtm}
 dtm <- DocumentTermMatrix(docs_corpus)
 dtm
 ```
 
-Cumulative frequencies of words across documents produces these results.
+Summary of cumulative frequencies of words across documents.
 
 ```{r freq}
 freq <- colSums(as.matrix(dtm))
 summary(freq)
+hist(x = freq, main = "Histogram of Cumulative Frequencies of Words", 
+     xlab = NULL)
 ```
 
 Twenty most frequent occurring terms.
@@ -138,10 +142,13 @@ wordcloud(names(freq), freq, scale = c(3, .5), max.words = 100)
 
 ## N-Grams
 
-N-grams are the base for a prediction model of next word. The ngram package 
-allows for fast n-gram tokenization.
+An n-gram is an ordered sequence of n “words” taken from a body of text. 
+They are the base for a prediction model of next word. 
+The ngram package allows for fast n-gram tokenization among other very useful utilities.
 
-Bigrams
+#### Bigrams
+
+Sequences of two words.
 
 ```{r cadena}
 cadena <- concatenate(lapply(docs_corpus, "[", 1))
@@ -151,26 +158,41 @@ cadena <- preprocess(cadena, case = "lower", remove.punct = TRUE,
 n2_gram <- ngram(cadena, n = 2)
 n2_gram_freqs <- get.phrasetable(n2_gram)
 summary(n2_gram_freqs$freq)
+hist(n2_gram_freqs$freq, main = "Histogram of Bigrams", xlab = NULL)
 n2_gram_freqs[order(n2_gram_freqs$freq, decreasing = TRUE), ][1:10, ]
 ```
 
-Trigrams
+#### Trigrams
+
+Sequencies of three words.
 
 ```{r n3}
 n3_gram <- ngram(cadena, n = 3)
 n3_gram_freqs <- get.phrasetable(n3_gram)
 summary(n3_gram_freqs$freq)
+hist(n3_gram_freqs$freq, main = "Histogram of Trigrams", xlab = NULL)
 n3_gram_freqs[order(n3_gram_freqs$freq, decreasing = TRUE), ][1:10, ]
 ```
 
 
-4-grams
+#### 4-grams
+
+Sequencies of four words.
 
 ```{r n4}
 n4_gram <- ngram(cadena, n = 4)
 n4_gram_freqs <- get.phrasetable(n4_gram)
 summary(n4_gram_freqs$freq)
+hist(n4_gram_freqs$freq, main = "Histogram of 4-grams", xlab = NULL)
 n4_gram_freqs[order(n4_gram_freqs$freq, decreasing = TRUE), ][1:10, ]
 ```
 
 ## Conclusions
+
+* The documents provided for the project are too large. Some kind of sampling
+will be applied in order to reduce the size of the dataset used to build the model.
+* Transformations provided by the tm package are not enough to clean the text. 
+Some manual cleaning through base functions will be needed. Removal of stopwords
+will have to be evaluated as probably are not suitable for the prediction model.
+* The ngram package provides some utilities and a tokenizer which are very well
+suited to build the prediction model.
