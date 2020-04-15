@@ -1,5 +1,5 @@
 
-# v202003311120
+# v202004152012
 
 calcula_mag <- function(x){
   tamano <- sapply(x, object.size)
@@ -69,7 +69,7 @@ predice_texto <- function(t){
     if (is.na(res_busq[1])){
       resultado[1] <- "Not found."
     } else {
-      resultado[1] <- "Found:"
+      resultado[1] <- "Predicted:"
       resultado[2] <- res_busq
     }
   }
