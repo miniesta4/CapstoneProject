@@ -1,0 +1,81 @@
+Data Science Specialization: Capstone Project
+========================================================
+author: Miguel Iniesta
+date: 17-4-2020
+autosize: false
+
+Introduction
+========================================================
+
+This presentation describes the final data product built for the Capstone Project
+of the Data Science Specialization offered by Johns Hopkins University.
+
+The project involves developing a a predictive model of text from a very large 
+and unstructure database of the English language.
+
+The main tasks performed can be summarized as:
+
+* Analyzing a large corpus of text documents to discover the structure in the data.
+* Cleaning and analyzing text data, then building and sampling from a predictive text model.
+* Build a predictive text product.
+
+The Predictive Model
+========================================================
+
+The predictive model is based on a table of n-grams and frequencies built
+from the documents provided. A n-gram is an ordered sequence of n “words” taken
+from a body of text.
+
+By forming all of the n-grams and recording the next “words” for each n-gram 
+(and their frequency), new text can be generated which has the same statistical
+properties as the input.
+
+This approach assumes that sequences of words follow a Markov process, so that
+the next word depends on the last few, with no relation to others in the 
+paragraph.
+
+Two key aspects have been taken into account for the development of the 
+algorithm: size and runtime. The goal has been to minimize both of them.
+
+The Application
+========================================================
+
+The main goal of the application is to provide a good experience to the user. 
+In that respect, simplicity has been a key factor.
+
+In an attemp to improve usability, instead of using a button, just typing a 
+white space after the sequence of words triggers the predictive search of the
+new word.
+
+The application just works in English language. Prediction is based on the last
+three words at most. Profanity words are ignored. Most common contractions used
+in English should work.
+
+The text used for prediction and the result obtained by the algorithm are
+displayed in blue color.
+
+The Web Page
+========================================================
+
+The application is shared as a web page. Users can navigate to the app through 
+the internet with a web browser, where they will find it fully rendered and 
+ready to be used.
+
+The server provides complete control over the app, including server 
+administration tools.
+
+The app is available at its own URL: https://miniesta4.shinyapps.io/TextPredApp/
+
+Thank you very much.
+
+The End.
+
+
+
+
+
+
+
+
+
+
