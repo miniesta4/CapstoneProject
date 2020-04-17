@@ -1,10 +1,11 @@
 
 # v202004151825
+# sample 1%
 library(ngram)
-source("./Script/Utils.R")
+source("./TextPredApp/Utils.R")
 
 make_ngrams <- function(directorio = "./Data/en_US"){
-  fics <- list.files("./Data/en_US", full.names = TRUE)
+  fics <- list.files(directorio, full.names = TRUE)
   docs <- lapply(fics, readLines, encoding = "UTF-8", skipNul = TRUE)
   names(docs) <- c("blogs", "news", "twitter")
   
@@ -16,17 +17,16 @@ make_ngrams <- function(directorio = "./Data/en_US"){
   rm(docs, samples)
   
   texto_v <- unlist(docs_sample, use.names = FALSE)
-  rm(docs_sample)
   texto_v1 <- limpia_texto(texto_v)
 
   # texto <- paste0(texto_v1, collapse = " ")
   texto1 <- grep("\\s", texto_v1, value = TRUE)
   texto2 <- grep("\\s\\w+\\s", texto_v1, value = TRUE)
   texto3 <- grep("\\s\\w+\\s\\w+\\s", texto_v1, value = TRUE)
-
+  
   n2_gram <- ngram(texto1, n = 2)
   n2_gram_freqs <- get.phrasetable(n2_gram)
-  n2_gram_freqs$pre_n <- 2 
+  n2_gram_freqs$pre_n <- 2
   
   n3_gram <- ngram(texto2, n = 3)
   n3_gram_freqs <- get.phrasetable(n3_gram)
@@ -37,9 +37,10 @@ make_ngrams <- function(directorio = "./Data/en_US"){
   n4_gram_freqs$pre_n <- 4
   
   n_gram_freqs <- rbind(n2_gram_freqs, n3_gram_freqs, n4_gram_freqs)
+  rm(n2_gram, n2_gram_freqs, n3_gram, n3_gram_freqs, n4_gram, n4_gram_freqs)
   n_gram_freqs$ngrams <- trimws(n_gram_freqs$ngrams)
   
-  index <- regexpr(" \\w+$", n_gram_freqs$ngrams)
+  index <- regexpr("\\s\\w+$", n_gram_freqs$ngrams)
   n_gram_freqs$pre <- trimws(substr(n_gram_freqs$ngrams, 1, index))
   n_gram_freqs$post <- substr(n_gram_freqs$ngrams, index + 1, nchar(n_gram_freqs$ngrams))
 

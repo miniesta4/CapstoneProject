@@ -1,5 +1,6 @@
 
 # v202004141752
+# No se utiliza. Se utiliza en su lugar el de TextPredApp
 
 calcula_mag <- function(x){
   tamano <- sapply(x, object.size)

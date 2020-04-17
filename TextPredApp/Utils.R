@@ -1,5 +1,5 @@
 
-# v202004152012
+# v202004171144
 
 calcula_mag <- function(x){
   tamano <- sapply(x, object.size)
@@ -51,19 +51,18 @@ predice_texto <- function(t){
     t_vector <- unlist(strsplit(t_limpio, " "))
     t_vector <- t_vector[grep("^$", t_vector, invert = TRUE)]
     t_vector <- tail(t_vector, 3)
+    longitud <- length(t_vector)
 
-    if (length(t_vector) == 3L){
+    if (longitud == 3L){
       t_buscado <- paste0(t_vector, collapse = " ")
       res_busq <- ngs_4$post[ngs_4$pre == t_buscado]
-      t_vector <- t_vector[-1]
     }
-    if (length(t_vector) == 2L & is.na(res_busq[1])){
-      t_buscado <- paste0(t_vector, collapse = " ")
+    if (longitud >= 2L && is.na(res_busq[1])){
+      t_buscado <- paste0(tail(t_vector, 2), collapse = " ")
       res_busq <- ngs_3$post[ngs_3$pre == t_buscado]
-      t_vector <- t_vector[-1]
     }
     if (is.na(res_busq[1])){
-      t_buscado <- t_vector[1]
+      t_buscado <- tail(t_vector, 1)
       res_busq <- ngs_2$post[ngs_2$pre == t_buscado]
     }
     if (is.na(res_busq[1])){

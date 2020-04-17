@@ -1,5 +1,5 @@
 
-# v202003311644
+# v202004171555
 library(shiny)
 
 shinyServer(function(input, output) {
@@ -15,7 +15,7 @@ shinyServer(function(input, output) {
     texto <- input$entrada
     validate(
       need(grep(" $", texto) == 1, 
-           message = "Enter please a space character to get prediction.")
+           message = "Enter please a white space character to get a prediction.")
     )
     predice_texto(texto)  
   })
