@@ -1,5 +1,12 @@
 
-# v202004171144
+# v202004172120
+
+ngs <- readRDS("./Data/n_gram_npp.Rds")
+ngs_2 <- ngs[ngs$pre_n == 2, ]
+ngs_3 <- ngs[ngs$pre_n == 3, ]
+ngs_4 <- ngs[ngs$pre_n == 4, ]
+rm(ngs)
+
 
 calcula_mag <- function(x){
   tamano <- sapply(x, object.size)
@@ -31,15 +38,15 @@ limpia_texto <- function(t, prof_fic = "./Data/en_profanity.txt" ){
 }
 
 predice_texto <- function(t){
-  if (!exists("ngs") & !exists("ngs_2")){
-    ngs <- readRDS("./Data/n_gram_npp.Rds")
-  }
-  if (!exists("ngs_2")){
-    ngs_2 <- ngs[ngs$pre_n == 2, ]
-    ngs_3 <- ngs[ngs$pre_n == 3, ]
-    ngs_4 <- ngs[ngs$pre_n == 4, ]
-    rm(ngs)
-  }
+  # if (!exists("ngs") & !exists("ngs_2")){
+  #   ngs <- readRDS("./Data/n_gram_npp.Rds")
+  # }
+  # if (!exists("ngs_2")){
+  #   ngs_2 <- ngs[ngs$pre_n == 2, ]
+  #   ngs_3 <- ngs[ngs$pre_n == 3, ]
+  #   ngs_4 <- ngs[ngs$pre_n == 4, ]
+  #   rm(ngs)
+  # }
 
   t_limpio <- limpia_texto(t)
   resultado <- character(length = 2)
